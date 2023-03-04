@@ -5,7 +5,7 @@ la infraestructura del dominio de vuelos
 
 """
 
-from aeroalpes.config.db import db
+from entregasalpes.config.db import db
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy import Column, ForeignKey, Integer, Table
 
@@ -14,10 +14,10 @@ import uuid
 Base = db.declarative_base()
 
 # Tabla intermedia para tener la relación de muchos a muchos entre la tabla reservas e itinerarios
-reservas_itinerarios = db.Table(
-    "reservas_itinerarios",
+ordenes_productos = db.Table(
+    "ordenes_productos",
     db.Model.metadata,
-    db.Column("reserva_id", db.String(40), db.ForeignKey("reservas.id")),
+    db.Column("orden_id", db.String(40), db.ForeignKey("ordenes.id")),
     db.Column("odo_orden", db.Integer),
     db.Column("segmento_orden", db.Integer),
     db.Column("leg_orden", db.Integer),
@@ -31,25 +31,24 @@ reservas_itinerarios = db.Table(
     )
 )
 
-class Itinerario(db.Model):
-    __tablename__ = "itinerarios"
-    odo_orden = db.Column(db.Integer, primary_key=True, nullable=False)
-    segmento_orden = db.Column(db.Integer, primary_key=True, nullable=False)
-    leg_orden = db.Column(db.Integer, primary_key=True, nullable=False)
-    fecha_salida = db.Column(db.DateTime, nullable=False, primary_key=True)
-    fecha_llegada = db.Column(db.DateTime, nullable=False, primary_key=True)
-    origen_codigo = db.Column(db.String(10), nullable=False, primary_key=True)
-    destino_codigo= db.Column(db.String(10), nullable=False, primary_key=True)
+class Producto(db.Model):
+    __tablename__ = "productos"
+    codigo = db.Column(db.Integer, primary_key=True, nullable=False)
+    serial = db.Column(db.String(10), primary_key=True, nullable=False)
+    descripcion = db.Column(db.String(100), primary_key=True, nullable=False)
+    precio = db.Column(db.Integer, nullable=False, primary_key=True)
+    fecha_vencimiento = db.Column(db.DateTime, nullable=False, primary_key=True)
+    tipo_producto = db.Column(db.String(100), nullable=False)
 
 
-class Reserva(db.Model):
-    __tablename__ = "reservas"
+class Orden(db.Model):
+    __tablename__ = "ordenes"
     id = db.Column(db.String(40), primary_key=True)
     fecha_creacion = db.Column(db.DateTime, nullable=False)
     fecha_actualizacion = db.Column(db.DateTime, nullable=False)
-    itinerarios = db.relationship('Itinerario', secondary=reservas_itinerarios, backref='reservas')
+    productos = db.relationship('Producto', secondary=ordenes_productos, backref='ordenes')
 
-class EventosReserva(db.Model):
+class EventosOrden(db.Model):
     __tablename__ = "eventos_reserva"
     id = db.Column(db.String(40), primary_key=True)
     id_entidad = db.Column(db.String(40), nullable=False)
@@ -61,6 +60,6 @@ class EventosReserva(db.Model):
     contenido = db.Column(db.Text, nullable=False)
 
 class ReservaAnalitica(db.Model):
-    __tablename__ = "analitica_reservas"
+    __tablename__ = "analitica_ordenes"
     fecha_creacion = db.Column(db.Date, primary_key=True)
     total = db.Column(db.Integer, primary_key=True, nullable=False)

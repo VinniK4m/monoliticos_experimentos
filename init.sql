@@ -1,10 +1,8 @@
-CREATE TABLE usuarios_legado(  
+CREATE TABLE ordenes(  
     id int NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT 'Llave primaria',
-    nombres VARCHAR(255),
-    apellidos VARCHAR(255),
-    direccion VARCHAR(255),
-    telefono VARCHAR(255),
-    email VARCHAR(255),
-    password VARCHAR(255)
+    descripcion VARCHAR(255),
+    fecha_orden DATE,
+    valor INTEGER,
+    id_usuario INT
 
-) COMMENT 'Tabla legado de los usuarios';
+) COMMENT 'Tabla ordenes ';
